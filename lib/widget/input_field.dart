@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 
-class InputField extends StatelessWidget {
+class InputField extends StatefulWidget {
   final Function addNewTransactionElement;
   InputField({required this.addNewTransactionElement});
 
-  Widget build(BuildContext context) {
-    final titleController = TextEditingController();
-    final amountInput = TextEditingController();
+  @override
+  _InputFieldState createState() => _InputFieldState();
+}
 
+class _InputFieldState extends State<InputField> {
+  final titleController = TextEditingController();
+  final amountInput = TextEditingController();
+  Widget build(BuildContext context) {
     void submitTransaction() {
       if (titleController.text == '' || double.parse(amountInput.text) <= 0) {
         FocusManager.instance.primaryFocus?.unfocus();
         return;
       }
-      addNewTransactionElement(
+      widget.addNewTransactionElement(
           title: titleController.text, amount: double.parse(amountInput.text));
       titleController.clear();
       amountInput.clear();
       FocusManager.instance.primaryFocus?.unfocus();
+      Navigator.of(context).pop();
     }
 
     return Container(

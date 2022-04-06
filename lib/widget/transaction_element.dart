@@ -34,17 +34,17 @@ class ListElement extends StatelessWidget {
               children: [
                 Text(
                   listItem.title,
-                  style: TextStyle(fontSize: 15),
+                  style: Theme.of(context).textTheme.headline6,
                 ),
               ],
             ),
             Container(
               child: Text(
                 '\$${listItem.amount.toStringAsFixed(2)}',
-                style: const TextStyle(
+                style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 20,
-                    color: Color.fromARGB(255, 38, 125, 196)),
+                    color: Theme.of(context).primaryColor),
               ),
               margin: const EdgeInsets.symmetric(
                 vertical: 10,
