@@ -131,14 +131,8 @@ class _MyHomePageState extends State<MyHomePage> {
           onPressed: () => {_triggerAddNewTransaction(context)},
         ),
         body: SizedBox(
-          height: 400,
-          child: ListView.builder(
-            itemBuilder: (context, index) => TransactionsList(
-              trnsactions: _userTransactions,
-              index: index,
-            ),
-            itemCount: _userTransactions.length,
-          ),
-        ));
+            child: TransactionsList(
+          userTransactions: _userTransactions,
+        )));
   }
 }
