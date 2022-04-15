@@ -20,29 +20,31 @@ class Chart extends StatelessWidget {
         }
       }
       return {'day': DateFormat.E().format(weekDay), 'amount': totalSum};
-    });
+    }).reversed.toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    print(groupedTransactionsValues[0]['amount']);
     var totalAmount = 0.0;
-    groupedTransactionsValues
-        .forEach((element) => totalAmount += (element['amount'] as double));
-    print(totalAmount);
-    return Card(
-        elevation: 6,
-        margin: const EdgeInsets.all(10),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: groupedTransactionsValues
-                .map((e) => Flexible(
-                      fit: FlexFit.tight,
-                      child: ChartBar(
-                          label: e['day'].toString(),
-                          amount: e['amount'] as double,
-                          totalAmount: totalAmount),
-                    ))
-                .toList()));
+    if (recentTransaction.isEmpty) {
+      return Container();
+    } else {
+      groupedTransactionsValues
+          .forEach((element) => totalAmount += (element['amount'] as double));
+      return Card(
+          elevation: 6,
+          margin: const EdgeInsets.all(10),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: groupedTransactionsValues
+                  .map((e) => Flexible(
+                        fit: FlexFit.tight,
+                        child: ChartBar(
+                            label: e['day'].toString(),
+                            amount: e['amount'] as double,
+                            totalAmount: totalAmount),
+                      ))
+                  .toList()));
+    }
   }
 }

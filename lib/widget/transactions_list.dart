@@ -6,8 +6,20 @@ import 'transaction_element.dart';
 class TransactionsList extends StatelessWidget {
   final List<Transaction> userTransactions;
   final listTheme;
+  final deleteTransaction;
 
-  TransactionsList({required this.userTransactions, required this.listTheme});
+  TransactionsList(
+      {required this.userTransactions,
+      required this.listTheme,
+      required this.deleteTransaction});
+
+  Widget getListElement(index) {
+    if (listTheme['default']) {
+      return ListElement(listItem: userTransactions[index]);
+    } else {
+      return NewListElement(listItem: userTransactions[index]);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +28,14 @@ class TransactionsList extends StatelessWidget {
       child: userTransactions.isEmpty
           ? Column(
               children: <Widget>[
+                const SizedBox(
+                  height: 50,
+                ),
                 Text(
                   'No transactions found',
                   style: Theme.of(context).textTheme.headline6,
                 ),
-                Container(
+                SizedBox(
                     height: 150,
                     child: Image.asset('assets/images/no-results.png',
                         fit: BoxFit.cover))
@@ -29,11 +44,42 @@ class TransactionsList extends StatelessWidget {
           : ListView.builder(
               itemCount: userTransactions.length,
               itemBuilder: (context, index) {
-                if (listTheme['default']) {
-                  return ListElement(listItem: userTransactions[index]);
-                } else {
-                  return NewListElement(listItem: userTransactions[index]);
-                }
+                return Dismissible(
+                  direction: DismissDirection.endToStart,
+                  key: Key(userTransactions[index].id.toString()),
+                  child: getListElement(index),
+                  onDismissed: (onDismissed) {
+                    deleteTransaction(userTransactions[index].id);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: const Text(
+                        'Transaction deleted',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      backgroundColor: Theme.of(context).errorColor,
+                    ));
+                  },
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 10),
+                    color: Theme.of(context).errorColor,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: const [
+                        Text(
+                          'Remove item',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                        Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        )
+                      ],
+                    ),
+                  ),
+                );
               }),
     );
   }

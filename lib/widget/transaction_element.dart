@@ -3,7 +3,6 @@ import '../models/transaction.dart';
 import 'transaction_element_date.dart';
 
 class ListElement extends StatelessWidget {
-  @override
   Transaction listItem;
   ListElement({Key? key, required this.listItem}) : super(key: key);
 
@@ -20,7 +19,7 @@ class ListElement extends StatelessWidget {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 1,
             blurRadius: 1,
-            offset: Offset(0, 2), // changes position of shadow
+            offset: const Offset(0, 2), // changes position of shadow
           ),
         ],
       ),

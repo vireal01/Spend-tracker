@@ -20,18 +20,18 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           fontFamily: 'Roboto',
           textTheme: ThemeData.light().textTheme.copyWith(
-              headline6: TextStyle(
+              headline6: const TextStyle(
                   fontFamily: 'Roboto',
                   fontWeight: FontWeight.normal,
                   fontSize: 18)),
-          appBarTheme: AppBarTheme(
+          appBarTheme: const AppBarTheme(
               titleTextStyle: TextStyle(
                   fontFamily: 'Roboto',
                   fontSize: 20,
                   fontWeight: FontWeight.normal)),
           colorScheme: const ColorScheme(
               brightness: Brightness.light,
-              primary: Colors.black,
+              primary: Color.fromARGB(255, 51, 72, 56),
               onPrimary: Colors.white,
               secondary: Colors.purple,
               onSecondary: Colors.yellow,
@@ -52,7 +52,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> transactions = [];
-  final List<Transaction> _userTransactions = [
+  List<Transaction> _userTransactions = [
     Transaction(
       id: 0,
       title: 'Food',
@@ -72,19 +72,19 @@ class _MyHomePageState extends State<MyHomePage> {
       date: DateTime(2022, 4, 11, 17),
     ),
     Transaction(
-      id: 2,
+      id: 3,
       title: 'Bla bla',
       amount: 10.0,
       date: DateTime(2022, 4, 12, 17),
     ),
     Transaction(
-      id: 2,
+      id: 4,
       title: 'Lol kekw',
       amount: 10.0,
       date: DateTime(2022, 4, 13, 17),
     ),
     Transaction(
-      id: 2,
+      id: 5,
       title: 'Lelw Kok',
       amount: 10.0,
       date: DateTime(2022, 4, 15, 17),
@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return _userTransactions.where(
       (element) {
         return element.date.isAfter(DateTime.now().subtract(
-          Duration(days: 7),
+          const Duration(days: 7),
         ));
       },
     ).toList();
@@ -106,13 +106,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void _addNewTransactionElement({
     required String title,
     required double amount,
+    required DateTime date,
   }) {
     setState(() {
       _userTransactions.add(Transaction(
           id: _userTransactions.length,
           title: title,
           amount: amount,
-          date: DateTime.now()));
+          date: date));
     });
   }
 
@@ -125,7 +126,6 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         cardTheme = {'default': false, 'modern': true};
       }
-      print(cardTheme);
     });
   }
 
@@ -144,6 +144,12 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (_) {
           return Settings(setTheme: changeTheme);
         });
+  }
+
+  void _deleteTransaction(transactionId) {
+    setState(() {
+      _userTransactions.removeWhere((element) => element.id == transactionId);
+    });
   }
 
   Widget build(BuildContext context) {
@@ -172,9 +178,9 @@ class _MyHomePageState extends State<MyHomePage> {
             Chart(_recentTransactions),
             SizedBox(
                 child: TransactionsList(
-              userTransactions: _userTransactions,
-              listTheme: cardTheme,
-            )),
+                    userTransactions: _userTransactions,
+                    listTheme: cardTheme,
+                    deleteTransaction: _deleteTransaction)),
           ],
         ));
   }

@@ -15,24 +15,22 @@ class _SettingsState extends State<Settings> {
   @override
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Text('Card theme:'),
-          ListTile(
-            leading: OutlinedButton(
-              onPressed: () => {widget.setTheme(isDefault: true)},
-              child: Text('Default'),
-            ),
+    return Column(
+      children: <Widget>[
+        const Text('Card theme:'),
+        ListTile(
+          leading: OutlinedButton(
+            onPressed: () => {widget.setTheme(isDefault: true)},
+            child: const Text('Default'),
           ),
-          ListTile(
-            leading: OutlinedButton(
-              onPressed: () => {widget.setTheme(isDefault: false)},
-              child: Text('Modern'),
-            ),
+        ),
+        ListTile(
+          leading: OutlinedButton(
+            onPressed: () => {widget.setTheme(isDefault: false)},
+            child: const Text('Modern'),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
