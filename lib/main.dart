@@ -1,15 +1,26 @@
-import 'dart:ui';
+import 'dart:io';
 
 import 'package:first_flutter_app/models/transaction.dart';
 import 'package:first_flutter_app/widget/chart.dart';
 import 'package:first_flutter_app/widget/settings.dart';
 import 'package:first_flutter_app/widget/user_transaction.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'widget/input_field.dart';
 import 'models/transaction.dart';
 import './widget/transactions_list.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight
+  ]);
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -129,6 +140,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  bool _isChartDisplayed = false;
+
   void _triggerAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
         context: ctx,
@@ -153,35 +166,88 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          title: const Text(
-            'Spend Tracker',
-            style: TextStyle(fontFamily: 'RubikMicrobe', fontSize: 30),
-          ),
-          actions: <Widget>[
-            IconButton(
-                onPressed: () => {_triggerAddNewTransaction(context)},
-                icon: Icon(Icons.add)),
-            IconButton(
-                onPressed: () => {_triggerSettings(context)},
-                icon: Icon(Icons.settings))
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () => {_triggerAddNewTransaction(context)},
-        ),
-        body: Column(
-          children: [
-            Chart(_recentTransactions),
-            SizedBox(
-                child: TransactionsList(
-                    userTransactions: _userTransactions,
-                    listTheme: cardTheme,
-                    deleteTransaction: _deleteTransaction)),
-          ],
-        ));
+    final PreferredSizeWidget appBar = Platform.isIOS
+        ? CupertinoNavigationBar(
+            middle: const Text('Datasda'),
+            trailing: Row(
+              children: <Widget>[
+                GestureDetector(
+                  child: const Icon(CupertinoIcons.add),
+                  onTap: () => _triggerAddNewTransaction(context),
+                )
+              ],
+            ),
+          )
+        : AppBar(
+            title: const Text(
+              'Spend Tracker',
+              style: TextStyle(fontFamily: 'RubikMicrobe', fontSize: 30),
+            ),
+            actions: <Widget>[
+              IconButton(
+                  onPressed: () => {_triggerAddNewTransaction(context)},
+                  icon: const Icon(Icons.add)),
+              IconButton(
+                  onPressed: () => {_triggerSettings(context)},
+                  icon: const Icon(Icons.settings))
+            ],
+          ) as PreferredSizeWidget;
+    Widget chartWidget(double heightMultiplier) {
+      return SizedBox(
+        height: (MediaQuery.of(context).size.height -
+                appBar.preferredSize.height -
+                MediaQuery.of(context).padding.vertical) *
+            heightMultiplier,
+        child: Chart(_recentTransactions),
+      );
+    }
+
+    Widget transactionsListWidget(double heightMultiplier) {
+      return SizedBox(
+          height: (MediaQuery.of(context).size.height -
+                  appBar.preferredSize.height -
+                  MediaQuery.of(context).padding.vertical) *
+              heightMultiplier,
+          child: TransactionsList(
+              userTransactions: _userTransactions,
+              listTheme: cardTheme,
+              deleteTransaction: _deleteTransaction));
+    }
+
+    final pageBody = MediaQuery.of(context).orientation == Orientation.landscape
+        ? Column(
+            children: [
+              Switch(
+                  value: _isChartDisplayed,
+                  onChanged: (val) => {
+                        setState(() {
+                          _isChartDisplayed = val;
+                        })
+                      }),
+              _isChartDisplayed
+                  ? chartWidget(0.8)
+                  : transactionsListWidget(0.8),
+            ],
+          )
+        : Column(
+            children: [
+              chartWidget(0.2),
+              transactionsListWidget(0.8),
+            ],
+          );
+
+    return Platform.isIOS
+        ? CupertinoPageScaffold(
+            child: pageBody,
+            navigationBar: appBar as ObstructingPreferredSizeWidget,
+          )
+        : Scaffold(
+            resizeToAvoidBottomInset: false,
+            appBar: appBar,
+            floatingActionButton: FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () => {_triggerAddNewTransaction(context)},
+            ),
+            body: pageBody);
   }
 }

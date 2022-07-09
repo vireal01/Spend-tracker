@@ -24,23 +24,24 @@ class TransactionsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 500,
       child: userTransactions.isEmpty
-          ? Column(
-              children: <Widget>[
-                const SizedBox(
-                  height: 50,
-                ),
-                Text(
-                  'No transactions found',
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                SizedBox(
-                    height: 150,
-                    child: Image.asset('assets/images/no-results.png',
-                        fit: BoxFit.cover))
-              ],
-            )
+          ? LayoutBuilder(builder: ((context, constraints) {
+              return Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: constraints.maxHeight * 0.2,
+                  ),
+                  Text(
+                    'No transactions found',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                  SizedBox(
+                      height: constraints.maxHeight * 0.3,
+                      child: Image.asset('assets/images/no-results.png',
+                          fit: BoxFit.cover))
+                ],
+              );
+            }))
           : ListView.builder(
               itemCount: userTransactions.length,
               itemBuilder: (context, index) {
